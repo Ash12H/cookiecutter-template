@@ -6,6 +6,7 @@ click
 Sphinx
 coverage
 ruff
+pytest
 {% if cookiecutter.python_interpreter != 'python3' %}
 
 # backwards compatibility
