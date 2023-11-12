@@ -1,12 +1,11 @@
-.PHONY: create_conda_env create_venv requirements lint format test generate_doc clean clean_env
+.PHONY: create_conda_env lint format test generate_doc clean
 
 #################################################################################
 # GLOBALS                                                                       #
 #################################################################################
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-PROJECT_NAME = {{ cookiecutter.repo_name }}
-PYTHON_INTERPRETER = {{ cookiecutter.python_interpreter }}
+PROJECT_NAME = {{ cookiecutter.project_slug }}
 
 ifeq (,$(shell which conda))
 HAS_CONDA=False
@@ -18,30 +17,21 @@ endif
 # COMMANDS                                                                      #
 #################################################################################
 
-## Set up python interpreter environment
+## [Step 1] Set up python interpreter environment
 create_conda_env:
 ifeq (True,$(HAS_CONDA))
-		@echo ">>> Detected conda, creating conda environment."
-ifeq (3,$(findstring 3,$(PYTHON_INTERPRETER)))
-	conda create --name $(PROJECT_NAME) python=3
-else
-	conda create --name $(PROJECT_NAME) python=2.7
-endif
-		@echo ">>> New conda env created. Activate with:\nconda activate $(PROJECT_NAME)"
+	conda env create --prefix .conda --file environment.yml
 else
 	@echo ">>> Conda not detected."
+	@echo ">>> Please install conda and try again : https://github.com/conda-forge/miniforge"
 endif
 
-## Create virtual environment and install requirements
-create_venv:
-	@echo "Make sure you have virtualenv installed."
-	$(PYTHON_INTERPRETER) -m venv .venv
-	@echo ">>> New venv created. Activate with:\nsource .venv/bin/activate"
+## [Step 2] Add poetry initialization
+init_poetry:
+	poetry add click
+	poetry add --group=dev pytest ruff pre-commit
+	poetry add --group=doc sphinx
 
-## Install Python Dependencies
-requirements:
-	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
-	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 
 ## Lint using Ruff
 lint:
@@ -58,16 +48,6 @@ test:
 ## Generate the documentation using Sphinx
 generate_doc:
 	cd ./docs && make html
-
-## Delete all compiled Python files
-clean:
-	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
-
-## Delete all compiled Python files and virtual environment
-clean_env:
-	rm -rf .venv
-	conda env remove --name $(PROJECT_NAME)
 
 #################################################################################
 # Self Documenting Commands                                                     #

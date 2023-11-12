@@ -1,0 +1,63 @@
+# --------------------------------------------------------------------------- #
+# Installation section
+# --------------------------------------------------------------------------- #
+
+[tool.poetry]
+name = "{{cookiecutter.project_slug}}"
+version = "0.0.1"
+description = "{{cookiecutter.description}}"
+authors = ["{{cookiecutter.author_name}} <{{cookiecutter.author_mail}}>"]
+repository = "https://github.com/{{cookiecutter.author_github_handle}}/{{cookiecutter.project_name}}"
+readme = "README.md"
+packages = [
+    {include = "{{cookiecutter.project_slug}}"}
+]
+
+[tool.poetry.dependencies]
+python = "{{ cookiecutter.python_version }}"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+# --------------------------------------------------------------------------- #
+# Ruff section
+# --------------------------------------------------------------------------- #
+
+[tool.ruff]
+select = [
+    "E","F","W","C90","I","N","D","UP","YTT","ANN","ASYNC",
+    "S","BLE","FBT","B","A","COM","C4","DTZ","T10","DJ","EM",
+    "EXE","FA","ISC","ICN","G","INP","PIE","T20","PYI","PT",
+    "Q","RSE","RET","SLF","SIM","TID","TCH","INT","ARG","PTH",
+    "TD","ERA","PD","PGH","PLC","PLE","PLR","PLW","TRY","FLY",
+    "NPY","AIR","RUF", "UP007", "B905", 
+]
+
+# Since xarray use .isnull function Rule PD004 cannot be used
+ignore = [
+    "D212", "D203", "D401", "D205", "COM812","S314", "PD004",
+    "PD010", "PD013", "SIM115", "D404"
+]
+line-length = 120
+exclude = [
+    ".eggs",
+    ".git",
+    ".venv",
+    ".conda",
+    "__pypackages__",
+    "build",
+    "docs",
+    "data",
+    "notebooks",
+    "references",
+    "reports",
+    "tests",
+    "__init__.py",
+]
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+[tool.ruff.pylint]
+# 5 is too restrictive for class initialization
+max-args = 7
